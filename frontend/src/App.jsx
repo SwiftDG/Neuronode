@@ -8,13 +8,11 @@ export default function App() {
   const [hint, setHint] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:5000/api/problems")
-      .then((res) => setProblems(res.data));
+    axios.get("/api/problems").then((res) => setProblems(res.data));
   }, []);
 
   const getHint = async () => {
-    const res = await axios.post("http://localhost:5000/api/hint", {
+    const res = await axios.post("/api/hint", {
       problemId: selected,
       hintLevel,
     });
