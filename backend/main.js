@@ -35,8 +35,8 @@ app.post("/api/hint", (req, res) => {
   res.json({ hint: problem.hints[hintLevel] || "No more hints" });
 });
 
-// Catch-all for frontend routing
-app.get("*", (req, res) => {
+// Fallback for SPA routing
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/dist/index.html"));
 });
 

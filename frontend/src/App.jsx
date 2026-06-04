@@ -2,13 +2,19 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 export default function App() {
-  const [problems, setProblems] = useState([]);
+  const [problems, setProblems] = useState([]); // Initialize as empty array
   const [selected, setSelected] = useState(null);
   const [hintLevel, setHintLevel] = useState(0);
   const [hint, setHint] = useState("");
 
   useEffect(() => {
-    axios.get("/api/problems").then((res) => setProblems(res.data));
+    axios
+      .get("/api/problems")
+      .then((res) => {
+        console.log("Response:", res.data); // Debug
+        setProblems(Array.isArray(res.data) ? res.data : []);
+      })
+      .catch((err) => console.error("Error:", err));
   }, []);
 
   const getHint = async () => {
@@ -25,7 +31,7 @@ export default function App() {
       <h1>Neuronode — DSA Tutor</h1>
 
       <div>
-        <h3>Problems</h3>
+        <h3>Problems ({problems.length})</h3>
         {problems.map((p) => (
           <button
             key={p.id}
@@ -40,7 +46,7 @@ export default function App() {
         ))}
       </div>
 
-      {selected && (
+      {selected && problems.find((p) => p.id === selected) && (
         <div
           style={{
             marginTop: "20px",
@@ -48,15 +54,11 @@ export default function App() {
             padding: "10px",
           }}
         >
-          {problems.find((p) => p.id === selected) && (
-            <>
-              <h3>{problems.find((p) => p.id === selected).title}</h3>
-              <p>{problems.find((p) => p.id === selected).description}</p>
-              <button onClick={getHint}>Get Hint ({hintLevel})</button>
-              {hint && (
-                <p style={{ color: "#0066cc", marginTop: "10px" }}>{hint}</p>
-              )}
-            </>
+          <h3>{problems.find((p) => p.id === selected).title}</h3>
+          <p>{problems.find((p) => p.id === selected).description}</p>
+          <button onClick={getHint}>Get Hint ({hintLevel})</button>
+          {hint && (
+            <p style={{ color: "#0066cc", marginTop: "10px" }}>{hint}</p>
           )}
         </div>
       )}
