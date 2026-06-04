@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
@@ -15,5 +15,5 @@ RUN npm --prefix backend install && \
 # Expose port
 EXPOSE 5000
 
-# Start backend (which serves frontend dist)
+# Start backend
 CMD ["npm", "--prefix", "backend", "start"]
