@@ -2,18 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyAGBdxcaBSWvy2JJr_2tf_4vHjlZ-19lNE",
+  authDomain: "neuronode-2c654.firebaseapp.com",
+  projectId: "neuronode-2c654",
+  storageBucket: "neuronode-2c654.firebasestorage.app",
+  messagingSenderId: "640614330695",
+  appId: "1:640614330695:web:be5ecd1db5e07b65f81c62",
 };
-
-console.log("🔥 Firebase ENV check:", {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-});
 
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
