@@ -8,6 +8,8 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
+const ANTHROPIC_API_KEY = "sk-ant-your-actual-key-here";
+
 const problems = [
   {
     id: 1,
@@ -406,7 +408,7 @@ app.post("/api/analyze", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
+        "x-api-key": ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({

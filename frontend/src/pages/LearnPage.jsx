@@ -1,4 +1,9 @@
 import { useState, useEffect } from "react";
+import CodeMirror from "@uiw/react-codemirror";
+import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
+import { java } from "@codemirror/lang-java";
+import { oneDark } from "@codemirror/theme-one-dark";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import axios from "axios";
@@ -156,6 +161,12 @@ export default function LearnPage() {
   };
 
   const isCompleted = (id) => completed.includes(id);
+
+  const getLanguageExtension = () => {
+    if (language === "python") return [python()];
+    if (language === "java") return [java()];
+    return [javascript()];
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] flex flex-col">
@@ -784,12 +795,13 @@ export default function LearnPage() {
                           </button>
                         </div>
                       </div>
-                      <textarea
+                      <CodeMirror
                         value={code}
-                        onChange={(e) => setCode(e.target.value)}
-                        className="w-full bg-[#0B1220] text-white/80 font-mono text-sm p-4 resize-none focus:outline-none leading-relaxed"
-                        rows={12}
-                        spellCheck={false}
+                        height="300px"
+                        theme={oneDark}
+                        extensions={getLanguageExtension()}
+                        onChange={(val) => setCode(val)}
+                        className="text-sm"
                       />
                     </div>
                   </motion.div>
