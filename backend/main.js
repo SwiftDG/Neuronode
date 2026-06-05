@@ -8,7 +8,8 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-const ANTHROPIC_API_KEY = "sk-ant-your-actual-key-here";
+const ANTHROPIC_API_KEY =
+  "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";
 
 const problems = [
   {
