@@ -1,3 +1,6 @@
+require("dotenv").config();
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
@@ -7,9 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "../frontend/dist")));
-
-const ANTHROPIC_API_KEY =
-  "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";
 
 const problems = [
   {
@@ -404,6 +404,10 @@ app.post("/api/analyze", async (req, res) => {
   const problem = problems.find((p) => p.id === problemId);
   if (!problem) return res.status(404).json({ error: "Problem not found" });
 
+  console.log("Analyze called for problem:", problemId);
+  console.log("API Key exists:", !!ANTHROPIC_API_KEY);
+  console.log("API Key prefix:", ANTHROPIC_API_KEY?.slice(0, 10));
+
   try {
     const response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
@@ -413,7 +417,7 @@ app.post("/api/analyze", async (req, res) => {
         "anthropic-version": "2023-06-01",
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
+        model: "claude-sonnet-4-5",
         max_tokens: 1000,
         messages: [
           {
@@ -438,10 +442,18 @@ Keep it concise, beginner-friendly, and never give the solution directly. Max 15
       }),
     });
 
+    console.log("Anthropic response status:", response.status);
     const data = await response.json();
+    console.log("Anthropic response:", JSON.stringify(data).slice(0, 200));
+
+    if (data.error) {
+      return res.status(500).json({ error: data.error.message });
+    }
+
     const analysis = data.content[0].text;
     res.json({ analysis });
   } catch (err) {
+    console.error("Analyze error:", err);
     res.status(500).json({ error: "Analysis failed", details: err.message });
   }
 });
