@@ -123,7 +123,7 @@ export default function Footer() {
             © {new Date().getFullYear()} Neuronode. All rights reserved.
           </p>
           <p className="text-[#64748B] text-sm">
-            Built with ❤️ by{" "}
+            Built by{" "}
             <a
               href="https://x.com/sarcdgdev"
               target="_blank"
