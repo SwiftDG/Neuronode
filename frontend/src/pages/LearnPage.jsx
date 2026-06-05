@@ -62,6 +62,9 @@ export default function LearnPage() {
   const [analysis, setAnalysis] = useState("");
   const [analyzing, setAnalyzing] = useState(false);
   const [testResults, setTestResults] = useState([]);
+  const [plainEnglish, setPlainEnglish] = useState(false);
+  const [runningTests, setRunningTests] = useState(false);
+  const [aiTestResults, setAiTestResults] = useState(null);
 
   useEffect(() => {
     axios
@@ -87,6 +90,8 @@ export default function LearnPage() {
     setActiveTab("problem");
     setAnalysis("");
     setTestResults([]);
+    setAiTestResults(null);
+    setPlainEnglish(false);
     setCode(problem.starterCode?.[language] || "");
   };
 
@@ -131,16 +136,37 @@ export default function LearnPage() {
     }
   };
 
-  const runTestCases = () => {
-    if (!selected?.testCases) return;
-    const results = selected.testCases.map((tc, i) => ({
-      id: i + 1,
-      input: JSON.stringify(tc.input),
-      expected: JSON.stringify(tc.output),
-      status: "visible",
-    }));
-    setTestResults(results);
+  const runTestCases = async () => {
+    if (
+      !selected?.testCases ||
+      !code.trim() ||
+      code === selected.starterCode?.[language]
+    ) {
+      setActiveTab("tests");
+      return;
+    }
+    setRunningTests(true);
+    setAiTestResults(null);
     setActiveTab("tests");
+    try {
+      const res = await axios.post("/api/run-tests", {
+        code,
+        problemId: selected.id,
+        language,
+        testCases: selected.testCases,
+      });
+      console.log("Run tests response:", res.data);
+      if (res.data.results) {
+        setAiTestResults(res.data.results);
+      } else {
+        setAiTestResults({ error: "No results returned" });
+      }
+    } catch (err) {
+      console.error("Run tests error:", err);
+      setAiTestResults({ error: "Could not evaluate tests right now." });
+    } finally {
+      setRunningTests(false);
+    }
   };
 
   const markComplete = () => {
@@ -158,6 +184,7 @@ export default function LearnPage() {
     setCode(selected?.starterCode?.[language] || "");
     setAnalysis("");
     setTestResults([]);
+    setAiTestResults(null);
   };
 
   const isCompleted = (id) => completed.includes(id);
@@ -185,7 +212,6 @@ export default function LearnPage() {
               </p>
             </div>
             <div className="flex items-center gap-3">
-              {/* Language Selector */}
               <div className="relative">
                 <button
                   onClick={() => setLangDropdown(!langDropdown)}
@@ -366,15 +392,15 @@ export default function LearnPage() {
                     transition={{ duration: 0.3 }}
                     className="space-y-4"
                   >
-                    {/* Problem Header */}
+                    {/* Problem Card */}
                     <div className="bg-white rounded-2xl border border-[#E2E8F0] overflow-hidden">
                       {/* Tabs */}
-                      <div className="flex border-b border-[#E2E8F0]">
+                      <div className="flex border-b border-[#E2E8F0] overflow-x-auto">
                         {["problem", "hints", "tests", "ai"].map((tab) => (
                           <button
                             key={tab}
                             onClick={() => setActiveTab(tab)}
-                            className={`px-4 py-3 text-sm font-medium capitalize transition-all duration-200 border-b-2 ${
+                            className={`px-4 py-3 text-sm font-medium capitalize transition-all duration-200 border-b-2 whitespace-nowrap ${
                               activeTab === tab
                                 ? "border-[#2563EB] text-[#2563EB]"
                                 : "border-transparent text-[#64748B] hover:text-[#1E2937]"
@@ -391,7 +417,7 @@ export default function LearnPage() {
                           {/* Title Row */}
                           <div className="flex items-start justify-between gap-4 mb-4">
                             <div>
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
                                 <span className="font-mono text-xs text-[#94A3B8]">
                                   #{String(selected.id).padStart(2, "0")}
                                 </span>
@@ -463,76 +489,170 @@ export default function LearnPage() {
                             </div>
                           </div>
 
-                          {/* Description */}
-                          <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0] mb-4">
-                            <p className="text-[#1E2937] leading-relaxed text-sm whitespace-pre-line">
-                              {selected.description}
-                            </p>
+                          {/* Plain English Toggle */}
+                          <div className="flex items-center gap-2 mb-4 p-1.5 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0]">
+                            <button
+                              onClick={() => setPlainEnglish(false)}
+                              className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                                !plainEnglish
+                                  ? "bg-white text-[#2563EB] shadow-sm border border-[#E2E8F0]"
+                                  : "text-[#64748B] hover:text-[#1E2937]"
+                              }`}
+                            >
+                              Coder Mode
+                            </button>
+                            <button
+                              onClick={() => setPlainEnglish(true)}
+                              className={`flex-1 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                                plainEnglish
+                                  ? "bg-white text-[#10B981] shadow-sm border border-[#E2E8F0]"
+                                  : "text-[#64748B] hover:text-[#1E2937]"
+                              }`}
+                            >
+                              Plain English
+                            </button>
                           </div>
 
-                          {/* Examples */}
-                          {selected.examples && (
-                            <div className="space-y-3 mb-4">
-                              {selected.examples.map((ex, i) => (
-                                <div
-                                  key={i}
-                                  className="border border-[#E2E8F0] rounded-xl overflow-hidden"
-                                >
-                                  <div className="bg-[#F8FAFC] px-4 py-2 border-b border-[#E2E8F0]">
-                                    <span className="text-xs font-semibold text-[#64748B] uppercase tracking-widest">
-                                      Example {i + 1}
-                                    </span>
-                                  </div>
-                                  <div className="p-4 font-mono text-sm space-y-2">
-                                    <div>
-                                      <span className="text-[#64748B]">
-                                        Input:{" "}
-                                      </span>
-                                      <span className="text-[#1E2937]">
-                                        {ex.input}
-                                      </span>
-                                    </div>
-                                    <div>
-                                      <span className="text-[#64748B]">
-                                        Output:{" "}
-                                      </span>
-                                      <span className="text-[#10B981] font-semibold">
-                                        {ex.output}
-                                      </span>
-                                    </div>
-                                    {ex.explanation && (
-                                      <div className="text-[#64748B] text-xs pt-1 border-t border-[#F1F5F9]">
-                                        <span className="font-semibold">
-                                          Explanation:{" "}
-                                        </span>
-                                        {ex.explanation}
-                                      </div>
-                                    )}
-                                  </div>
+                          {/* Description — toggles based on mode */}
+                          <AnimatePresence mode="wait">
+                            {plainEnglish && selected.plainEnglish ? (
+                              <motion.div
+                                key="plain"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="space-y-3 mb-4"
+                              >
+                                {/* Analogy */}
+                                <div className="bg-[#ECFDF5] rounded-xl p-4 border border-[#10B981]/20">
+                                  <p className="text-xs font-semibold text-[#10B981] uppercase tracking-widest mb-2">
+                                    Real World Analogy
+                                  </p>
+                                  <p className="text-[#1E2937] text-sm leading-relaxed">
+                                    {selected.plainEnglish.analogy}
+                                  </p>
                                 </div>
-                              ))}
-                            </div>
-                          )}
 
-                          {/* Constraints */}
-                          {selected.constraints && (
-                            <div className="mb-4">
-                              <p className="text-xs font-semibold text-[#64748B] uppercase tracking-widest mb-2">
-                                Constraints
-                              </p>
-                              <ul className="space-y-1">
-                                {selected.constraints.map((c, i) => (
-                                  <li
-                                    key={i}
-                                    className="flex items-center gap-2 text-sm text-[#1E2937] font-mono"
-                                  >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
-                                    {c}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
+                                {/* Task */}
+                                <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0]">
+                                  <p className="text-xs font-semibold text-[#64748B] uppercase tracking-widest mb-2">
+                                    What You Need To Do
+                                  </p>
+                                  <p className="text-[#1E2937] text-sm leading-relaxed">
+                                    {selected.plainEnglish.task}
+                                  </p>
+                                </div>
+
+                                {/* Example */}
+                                <div className="bg-[#EFF6FF] rounded-xl p-4 border border-[#2563EB]/20">
+                                  <p className="text-xs font-semibold text-[#2563EB] uppercase tracking-widest mb-2">
+                                    Example (Plain)
+                                  </p>
+                                  <pre className="text-[#1E2937] text-sm leading-relaxed whitespace-pre-wrap font-mono">
+                                    {selected.plainEnglish.example}
+                                  </pre>
+                                </div>
+
+                                {/* Key Question */}
+                                <div className="bg-[#FFFBEB] rounded-xl p-4 border border-[#F59E0B]/20">
+                                  <p className="text-xs font-semibold text-[#F59E0B] uppercase tracking-widest mb-2">
+                                    Think About This
+                                  </p>
+                                  <p className="text-[#1E2937] text-sm leading-relaxed italic">
+                                    {selected.plainEnglish.keyQuestion}
+                                  </p>
+                                </div>
+
+                                {/* Pseudocode */}
+                                <div className="bg-[#0B1220] rounded-xl p-4">
+                                  <p className="text-xs font-semibold text-[#14B8A6] uppercase tracking-widest mb-3">
+                                    📝 Steps (No Syntax Required)
+                                  </p>
+                                  <pre className="text-white/80 text-xs leading-relaxed whitespace-pre-wrap font-mono">
+                                    {selected.plainEnglish.pseudocode}
+                                  </pre>
+                                </div>
+                              </motion.div>
+                            ) : (
+                              <motion.div
+                                key="coder"
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0 }}
+                                className="mb-4"
+                              >
+                                <div className="bg-[#F8FAFC] rounded-xl p-4 border border-[#E2E8F0] mb-4">
+                                  <p className="text-[#1E2937] leading-relaxed text-sm whitespace-pre-line">
+                                    {selected.description}
+                                  </p>
+                                </div>
+
+                                {/* Examples */}
+                                {selected.examples && (
+                                  <div className="space-y-3 mb-4">
+                                    {selected.examples.map((ex, i) => (
+                                      <div
+                                        key={i}
+                                        className="border border-[#E2E8F0] rounded-xl overflow-hidden"
+                                      >
+                                        <div className="bg-[#F8FAFC] px-4 py-2 border-b border-[#E2E8F0]">
+                                          <span className="text-xs font-semibold text-[#64748B] uppercase tracking-widest">
+                                            Example {i + 1}
+                                          </span>
+                                        </div>
+                                        <div className="p-4 font-mono text-sm space-y-2">
+                                          <div>
+                                            <span className="text-[#64748B]">
+                                              Input:{" "}
+                                            </span>
+                                            <span className="text-[#1E2937]">
+                                              {ex.input}
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="text-[#64748B]">
+                                              Output:{" "}
+                                            </span>
+                                            <span className="text-[#10B981] font-semibold">
+                                              {ex.output}
+                                            </span>
+                                          </div>
+                                          {ex.explanation && (
+                                            <div className="text-[#64748B] text-xs pt-1 border-t border-[#F1F5F9]">
+                                              <span className="font-semibold">
+                                                Explanation:{" "}
+                                              </span>
+                                              {ex.explanation}
+                                            </div>
+                                          )}
+                                        </div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+
+                                {/* Constraints */}
+                                {selected.constraints && (
+                                  <div className="mb-4">
+                                    <p className="text-xs font-semibold text-[#64748B] uppercase tracking-widest mb-2">
+                                      Constraints
+                                    </p>
+                                    <ul className="space-y-1">
+                                      {selected.constraints.map((c, i) => (
+                                        <li
+                                          key={i}
+                                          className="flex items-center gap-2 text-sm text-[#1E2937] font-mono"
+                                        >
+                                          <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB] flex-shrink-0" />
+                                          {c}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                )}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
 
                           {/* YouTube */}
                           {selected.youtubeId && (
@@ -545,7 +665,6 @@ export default function LearnPage() {
                             </button>
                           )}
 
-                          {/* Video */}
                           <AnimatePresence>
                             {showVideo && selected.youtubeId && (
                               <motion.div
@@ -654,39 +773,105 @@ export default function LearnPage() {
                             </span>
                           </div>
 
-                          {selected.testCases?.map((tc, i) => (
-                            <div
-                              key={i}
-                              className="border border-[#E2E8F0] rounded-xl overflow-hidden mb-3"
-                            >
-                              <div className="bg-[#F8FAFC] px-4 py-2 border-b border-[#E2E8F0] flex items-center justify-between">
-                                <span className="text-xs font-semibold text-[#64748B]">
-                                  Case {i + 1}
-                                </span>
-                                <span className="text-xs text-[#10B981] bg-[#ECFDF5] px-2 py-0.5 rounded-full">
-                                  Visible
-                                </span>
-                              </div>
-                              <div className="p-4 font-mono text-xs space-y-2">
-                                <div>
-                                  <span className="text-[#64748B]">
-                                    Input:{" "}
-                                  </span>
-                                  <span className="text-[#1E2937]">
-                                    {JSON.stringify(tc.input)}
-                                  </span>
-                                </div>
-                                <div>
-                                  <span className="text-[#64748B]">
-                                    Expected:{" "}
-                                  </span>
-                                  <span className="text-[#10B981] font-semibold">
-                                    {JSON.stringify(tc.output)}
-                                  </span>
-                                </div>
-                              </div>
+                          {/* AI Test Results */}
+                          {runningTests && (
+                            <div className="flex items-center gap-3 p-4 bg-[#F8FAFC] rounded-xl border border-[#E2E8F0] mb-4">
+                              <div className="w-4 h-4 border-2 border-[#2563EB]/30 border-t-[#2563EB] rounded-full animate-spin" />
+                              <p className="text-sm text-[#64748B]">
+                                Evaluating your code against test cases...
+                              </p>
                             </div>
-                          ))}
+                          )}
+
+                          {aiTestResults && !aiTestResults.error && (
+                            <div className="space-y-3 mb-4">
+                              {aiTestResults.map((result, i) => (
+                                <motion.div
+                                  key={i}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ delay: i * 0.1 }}
+                                  className={`border rounded-xl overflow-hidden ${
+                                    result.passed
+                                      ? "border-[#10B981]/30 bg-[#ECFDF5]"
+                                      : "border-[#EF4444]/30 bg-[#FEF2F2]"
+                                  }`}
+                                >
+                                  <div className="px-4 py-2 flex items-center justify-between border-b border-white/50">
+                                    <span className="text-xs font-semibold text-[#64748B]">
+                                      Case {i + 1}
+                                    </span>
+                                    <span
+                                      className={`text-xs font-bold ${result.passed ? "text-[#10B981]" : "text-[#EF4444]"}`}
+                                    >
+                                      {result.passed ? "✓ PASS" : "✗ FAIL"}
+                                    </span>
+                                  </div>
+                                  <div className="p-4 font-mono text-xs space-y-1">
+                                    <div>
+                                      <span className="text-[#64748B]">
+                                        Input:{" "}
+                                      </span>
+                                      <span className="text-[#1E2937]">
+                                        {JSON.stringify(result.input)}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="text-[#64748B]">
+                                        Expected:{" "}
+                                      </span>
+                                      <span className="text-[#10B981]">
+                                        {JSON.stringify(result.expected)}
+                                      </span>
+                                    </div>
+                                    {result.feedback && (
+                                      <div className="mt-2 pt-2 border-t border-white/50">
+                                        <p className="text-[#1E2937] text-xs leading-relaxed">
+                                          {result.feedback}
+                                        </p>
+                                      </div>
+                                    )}
+                                  </div>
+                                </motion.div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Visible Test Cases */}
+                          {(!aiTestResults || aiTestResults.error) &&
+                            selected.testCases?.map((tc, i) => (
+                              <div
+                                key={i}
+                                className="border border-[#E2E8F0] rounded-xl overflow-hidden mb-3"
+                              >
+                                <div className="bg-[#F8FAFC] px-4 py-2 border-b border-[#E2E8F0] flex items-center justify-between">
+                                  <span className="text-xs font-semibold text-[#64748B]">
+                                    Case {i + 1}
+                                  </span>
+                                  <span className="text-xs text-[#10B981] bg-[#ECFDF5] px-2 py-0.5 rounded-full">
+                                    Visible
+                                  </span>
+                                </div>
+                                <div className="p-4 font-mono text-xs space-y-2">
+                                  <div>
+                                    <span className="text-[#64748B]">
+                                      Input:{" "}
+                                    </span>
+                                    <span className="text-[#1E2937]">
+                                      {JSON.stringify(tc.input)}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <span className="text-[#64748B]">
+                                      Expected:{" "}
+                                    </span>
+                                    <span className="text-[#10B981] font-semibold">
+                                      {JSON.stringify(tc.output)}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
 
                           <div className="border border-dashed border-[#E2E8F0] rounded-xl p-4 text-center">
                             <AlertCircle className="w-5 h-5 text-[#94A3B8] mx-auto mb-2" />
@@ -781,9 +966,14 @@ export default function LearnPage() {
                         <div className="flex items-center gap-2">
                           <button
                             onClick={runTestCases}
-                            className="flex items-center gap-1.5 bg-[#10B981] hover:bg-[#059669] text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
+                            disabled={runningTests}
+                            className="flex items-center gap-1.5 bg-[#10B981] hover:bg-[#059669] disabled:opacity-50 text-white text-xs font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
                           >
-                            <Play className="w-3 h-3" />
+                            {runningTests ? (
+                              <div className="w-3 h-3 border border-white/30 border-t-white rounded-full animate-spin" />
+                            ) : (
+                              <Play className="w-3 h-3" />
+                            )}
                             Run Tests
                           </button>
                           <button

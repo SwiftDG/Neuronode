@@ -18,6 +18,24 @@ const problems = [
     category: "arrays",
     difficulty: "Easy",
     pattern: "Hashmap",
+    plainEnglish: {
+      analogy:
+        "Imagine you're at a market with a shopping budget. You have a list of item prices and you need to find exactly two items that together cost exactly your budget. You can't buy the same item twice.",
+      task: "You're given a list of numbers and a target number. Find two numbers in the list that add up to the target. Return their positions (index) in the list.",
+      example:
+        "List: [2, 7, 11, 15], Target: 9\n→ 2 + 7 = 9 ✓\n→ They're at positions 0 and 1\n→ Answer: [0, 1]",
+      keyQuestion:
+        "As you look at each price tag, can you quickly check if the 'perfect partner' price is already in your basket?",
+      pseudocode: `CREATE an empty box (to store numbers you've seen)
+
+FOR each number in the list:
+    Calculate what number you NEED = target - current number
+    
+    IF the number you need is already in the box:
+        RETURN [position of needed number, current position]
+    
+    PUT current number in the box (remember it for later)`,
+    },
     description: `Given an array of integers \`nums\` and an integer \`target\`, return the indices of the two numbers that add up to \`target\`.
 
 You may assume that each input would have exactly one solution, and you may not use the same element twice.
@@ -73,6 +91,24 @@ You can return the answer in any order.`,
     category: "arrays",
     difficulty: "Easy",
     pattern: "Hashset",
+    plainEnglish: {
+      analogy:
+        "You're a bouncer at a party with a guest list. As each guest arrives, you check if their name is already on your checked-in list. If it is — they're a duplicate!",
+      task: "Given a list of numbers, return TRUE if any number appears more than once. Return FALSE if all numbers are different.",
+      example:
+        "List: [1, 2, 3, 1]\n→ We see 1 at the start\n→ We see 1 again at the end\n→ Duplicate found! Answer: true",
+      keyQuestion:
+        "As you check in each guest, is their name already on your list?",
+      pseudocode: `CREATE an empty guest list (Set)
+
+FOR each number in the list:
+    IF number is already in guest list:
+        RETURN true (duplicate found!)
+    
+    ADD number to guest list
+
+RETURN false (no duplicates found)`,
+    },
     description: `Given an integer array \`nums\`, return \`true\` if any value appears at least twice in the array, and return \`false\` if every element is distinct.`,
     constraints: ["1 ≤ nums.length ≤ 10⁵", "-10⁹ ≤ nums[i] ≤ 10⁹"],
     examples: [
@@ -119,6 +155,29 @@ You can return the answer in any order.`,
     category: "arrays",
     difficulty: "Easy",
     pattern: "Hashmap / Frequency Count",
+    plainEnglish: {
+      analogy:
+        "Think of Scrabble tiles. 'listen' and 'silent' use the exact same tiles, just arranged differently. Can you rearrange the tiles from one word to spell the other?",
+      task: "Given two words, check if one word uses the exact same letters as the other — just in a different order.",
+      example:
+        '"anagram" and "nagaram"\n→ Both have: a(3), n(1), g(1), r(1), m(1)\n→ Same letters! Answer: true\n\n"rat" and "car"\n→ rat has: r,a,t\n→ car has: c,a,r\n→ Different letters! Answer: false',
+      keyQuestion:
+        "If you counted how many times each letter appears in both words, would the counts match?",
+      pseudocode: `IF the two words have different lengths:
+    RETURN false (can't be anagrams)
+
+CREATE a letter counter (empty)
+
+FOR each letter in first word:
+    ADD 1 to that letter's count
+
+FOR each letter in second word:
+    SUBTRACT 1 from that letter's count
+    IF count goes below 0:
+        RETURN false (letter mismatch!)
+
+RETURN true (all counts balanced!)`,
+    },
     description: `Given two strings \`s\` and \`t\`, return \`true\` if \`t\` is an anagram of \`s\`, and \`false\` otherwise.
 
 An anagram is a word or phrase formed by rearranging the letters of a different word or phrase, using all the original letters exactly once.`,
@@ -165,6 +224,25 @@ An anagram is a word or phrase formed by rearranging the letters of a different 
     category: "arrays",
     difficulty: "Medium",
     pattern: "Hashmap / Sorting",
+    plainEnglish: {
+      analogy:
+        "You have a pile of Scrabble hands and need to group them. Any hand with the same tiles goes in the same group — regardless of order.",
+      task: "Given a list of words, group all the anagrams together. Words that use the same letters belong in the same group.",
+      example:
+        '["eat","tea","tan","ate","nat","bat"]\n→ eat, tea, ate all use same letters → one group\n→ tan, nat use same letters → another group\n→ bat has unique letters → its own group',
+      keyQuestion:
+        "What if you sorted each word's letters alphabetically? Would anagrams produce the same sorted result?",
+      pseudocode: `CREATE an empty groups container (hashmap)
+
+FOR each word in the list:
+    SORT the letters of the word alphabetically
+    (e.g. "eat" → "aet", "tea" → "aet")
+    
+    USE sorted version as a GROUP KEY
+    ADD original word to that group
+    
+RETURN all the groups`,
+    },
     description: `Given an array of strings \`strs\`, group the anagrams together. You can return the answer in any order.
 
 An anagram is a word or phrase formed by rearranging the letters of another word, using all the original letters exactly once.`,
@@ -223,6 +301,23 @@ An anagram is a word or phrase formed by rearranging the letters of another word
     category: "arrays",
     difficulty: "Medium",
     pattern: "Hashmap / Bucket Sort",
+    plainEnglish: {
+      analogy:
+        "You're counting votes in an election. After counting, you need to find the top K candidates with the most votes.",
+      task: "Given a list of numbers and a number K, find the K numbers that appear most often in the list.",
+      example:
+        "List: [1,1,1,2,2,3], K: 2\n→ 1 appears 3 times\n→ 2 appears 2 times\n→ 3 appears 1 time\n→ Top 2 most frequent: [1, 2]",
+      keyQuestion:
+        "After counting how often each number appears, how do you efficiently find the top K?",
+      pseudocode: `CREATE a vote counter (hashmap)
+
+FOR each number in list:
+    ADD 1 to that number's vote count
+
+SORT numbers by vote count (highest first)
+
+RETURN the first K numbers from sorted list`,
+    },
     description: `Given an integer array \`nums\` and an integer \`k\`, return the \`k\` most frequent elements. You may return the answer in any order.`,
     constraints: [
       "1 ≤ nums.length ≤ 10⁵",
@@ -269,6 +364,24 @@ An anagram is a word or phrase formed by rearranging the letters of another word
     category: "arrays",
     difficulty: "Medium",
     pattern: "Prefix / Suffix Products",
+    plainEnglish: {
+      analogy:
+        "You're in a factory assembly line. For each station, you need to know the product of everything made at ALL OTHER stations — not your own.",
+      task: "For each number in the list, multiply ALL other numbers together (skip the current one). Return a new list of these products. You cannot divide.",
+      example:
+        "List: [1,2,3,4]\n→ Position 0: 2×3×4 = 24\n→ Position 1: 1×3×4 = 12\n→ Position 2: 1×2×4 = 8\n→ Position 3: 1×2×3 = 6\n→ Answer: [24,12,8,6]",
+      keyQuestion:
+        "What if you calculated everything to the LEFT of each position separately from everything to the RIGHT?",
+      pseudocode: `CREATE result list (same size as input)
+
+FIRST PASS (left to right):
+    For each position, store the product of everything to its LEFT
+    
+SECOND PASS (right to left):
+    For each position, multiply by the product of everything to its RIGHT
+    
+RETURN result list`,
+    },
     description: `Given an integer array \`nums\`, return an array \`answer\` such that \`answer[i]\` is equal to the product of all the elements of \`nums\` except \`nums[i]\`.
 
 The product of any prefix or suffix of \`nums\` is guaranteed to fit in a 32-bit integer.
@@ -318,6 +431,28 @@ You must write an algorithm that runs in O(n) time and without using the divisio
     category: "arrays",
     difficulty: "Medium",
     pattern: "Kadane's Algorithm / Dynamic Programming",
+    plainEnglish: {
+      analogy:
+        "You're tracking your daily profit/loss as a trader. You want to find the stretch of consecutive days where your total earnings were highest.",
+      task: "Given a list of numbers (positive and negative), find a group of consecutive numbers that gives the biggest sum when added together.",
+      example:
+        "List: [-2,1,-3,4,-1,2,1,-5,4]\n→ The stretch [4,-1,2,1] adds up to 6\n→ No other consecutive stretch adds up to more\n→ Answer: 6",
+      keyQuestion:
+        "At each number, should you extend your current streak or start fresh? When does starting over make more sense?",
+      pseudocode: `SET current_sum = first number
+SET best_sum = first number
+
+FOR each remaining number:
+    IF starting fresh here is better than continuing:
+        SET current_sum = current number
+    ELSE:
+        ADD current number to current_sum
+    
+    IF current_sum is better than best_sum:
+        UPDATE best_sum
+
+RETURN best_sum`,
+    },
     description: `Given an integer array \`nums\`, find the subarray with the largest sum, and return its sum.
 
 A subarray is a contiguous non-empty sequence of elements within an array.`,
@@ -369,6 +504,7 @@ app.get("/api/problems", (req, res) => {
     category: p.category,
     difficulty: p.difficulty,
     pattern: p.pattern,
+    plainEnglish: p.plainEnglish,
     description: p.description,
     constraints: p.constraints,
     examples: p.examples,
@@ -385,6 +521,113 @@ app.get("/api/problems/:id", (req, res) => {
   if (!problem) return res.status(404).json({ error: "Problem not found" });
   const { hiddenTestCases, ...publicProblem } = problem;
   res.json(publicProblem);
+});
+
+app.post("/api/optimal", async (req, res) => {
+  const { code, problemId, language } = req.body;
+  const problem = problems.find((p) => p.id === problemId);
+  if (!problem) return res.status(404).json({ error: "Problem not found" });
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 800,
+        messages: [
+          {
+            role: "user",
+            content: `A student just submitted their solution for "${problem.title}" in ${language}.
+
+Their code:
+\`\`\`${language}
+${code}
+\`\`\`
+
+Now that they've submitted, explain:
+1. The optimal approach for this problem (pattern name + why it's optimal)
+2. Time and space complexity of the optimal solution
+3. If their approach differs from optimal, briefly explain how to improve it
+4. One key insight that makes this problem click
+
+Keep it educational, encouraging, and under 200 words. No code — just explanation.`,
+          },
+        ],
+      }),
+    });
+
+    const data = await response.json();
+    if (data.error) return res.status(500).json({ error: data.error.message });
+    const optimal = data.content[0].text;
+    res.json({ optimal });
+  } catch (err) {
+    console.error("Optimal error:", err);
+    res.status(500).json({ error: "Could not generate optimal solution" });
+  }
+});
+
+app.post("/api/run-tests", async (req, res) => {
+  const { code, problemId, language, testCases } = req.body;
+  const problem = problems.find((p) => p.id === problemId);
+  if (!problem) return res.status(404).json({ error: "Problem not found" });
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": ANTHROPIC_API_KEY,
+        "anthropic-version": "2023-06-01",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-5",
+        max_tokens: 1500,
+        messages: [
+          {
+            role: "user",
+            content: `You are evaluating a student's code solution for the problem "${problem.title}".
+
+Student's code (${language}):
+\`\`\`${language}
+${code}
+\`\`\`
+
+Test cases to evaluate against:
+${JSON.stringify(testCases, null, 2)}
+
+For each test case, determine if the student's logic would pass or fail based on their approach.
+Do NOT actually execute the code — evaluate the logic.
+
+Respond with ONLY a JSON array (no markdown, no explanation outside JSON):
+[
+  {
+    "input": <test case input object>,
+    "expected": <expected output>,
+    "passed": true/false,
+    "feedback": "one sentence explaining why it passes or what's wrong"
+  }
+]`,
+          },
+        ],
+      }),
+    });
+
+    const data = await response.json();
+    const text = data.content[0].text.trim();
+    const clean = text.replace(/```json|```/g, "").trim();
+    const results = JSON.parse(clean);
+    res.json({ results });
+  } catch (err) {
+    console.error("Run tests error:", err);
+    res
+      .status(500)
+      .json({ error: "Could not evaluate tests", details: err.message });
+  }
 });
 
 app.post("/api/hint", (req, res) => {
