@@ -17,11 +17,17 @@ const problems = [
     category: "arrays",
     difficulty: "Easy",
     description:
-      "Given an array of integers, find two numbers that add to target.",
+      "Given an array of integers nums and an integer target, return indices of the two numbers that add up to target.",
+    youtubeId: "KLlXCFG5TnA",
+    starterCode: {
+      javascript: `function twoSum(nums, target) {\n  // your code here\n}`,
+      python: `def two_sum(nums, target):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "What data structure lets you check if a value exists in O(1)?",
-      "Could you iterate once and store values you've seen?",
-      "For each number, check if (target - number) exists in what you've stored",
+      "What data structure lets you check if a value exists in O(1) — meaning instantly, no matter how big the array?",
+      "Could you go through the array once and remember what you've seen so far?",
+      "For each number, check if (target - that number) is something you've already seen.",
     ],
   },
   {
@@ -29,11 +35,18 @@ const problems = [
     title: "Contains Duplicate",
     category: "arrays",
     difficulty: "Easy",
-    description: "Determine if any value appears at least twice in the array.",
+    description:
+      "Given an integer array nums, return true if any value appears at least twice, and false if every element is distinct.",
+    youtubeId: "3OamzN90kPg",
+    starterCode: {
+      javascript: `function containsDuplicate(nums) {\n  // your code here\n}`,
+      python: `def contains_duplicate(nums):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public boolean containsDuplicate(int[] nums) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "How would you track what you have already seen?",
-      "What structure gives you O(1) lookup and stores unique values?",
-      "Add each element to a Set — if it already exists, you found a duplicate",
+      "How would you remember which numbers you've already seen as you go through the array?",
+      "A Set is like a bag that refuses to hold duplicates — what happens when you try to add something already in it?",
+      "Go through each number. If it's already in your Set, you found a duplicate. If not, add it.",
     ],
   },
   {
@@ -41,11 +54,18 @@ const problems = [
     title: "Valid Anagram",
     category: "arrays",
     difficulty: "Easy",
-    description: "Check if two strings are anagrams of each other.",
+    description:
+      "Given two strings s and t, return true if t is an anagram of s, and false otherwise. An anagram uses the same letters, just rearranged.",
+    youtubeId: "9UtInBqnCgA",
+    starterCode: {
+      javascript: `function isAnagram(s, t) {\n  // your code here\n}`,
+      python: `def is_anagram(s, t):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public boolean isAnagram(String s, String t) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "What do anagrams have in common structurally?",
-      "What if you counted the frequency of each character?",
-      "Build a frequency map for both strings and compare them",
+      "Anagrams have the exact same letters — just in different order. What do they share?",
+      "What if you counted how many times each letter appears in both strings?",
+      "Build a frequency map (letter → count) for both strings. If the maps are equal, they're anagrams.",
     ],
   },
   {
@@ -53,11 +73,18 @@ const problems = [
     title: "Group Anagrams",
     category: "arrays",
     difficulty: "Medium",
-    description: "Group strings that are anagrams of each other together.",
+    description:
+      "Given an array of strings, group the anagrams together. You can return the answer in any order.",
+    youtubeId: "vzdNOK2oB2E",
+    starterCode: {
+      javascript: `function groupAnagrams(strs) {\n  // your code here\n}`,
+      python: `def group_anagrams(strs):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public List<List<String>> groupAnagrams(String[] strs) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "What property do all anagrams in a group share?",
-      "Could you use that shared property as a key?",
-      "Sort each string — anagrams produce the same sorted string. Use it as a hashmap key",
+      "All anagrams in a group share something in common — what is it?",
+      "If you sort the letters of any anagram, you get the same result. Could that be your group key?",
+      "Sort each string alphabetically. Use that sorted version as a key in a hashmap. Group strings by their key.",
     ],
   },
   {
@@ -65,11 +92,18 @@ const problems = [
     title: "Top K Frequent Elements",
     category: "arrays",
     difficulty: "Medium",
-    description: "Find the k most frequent elements in an array.",
+    description:
+      "Given an integer array nums and an integer k, return the k most frequent elements.",
+    youtubeId: "YPTqKIgVk-k",
+    starterCode: {
+      javascript: `function topKFrequent(nums, k) {\n  // your code here\n}`,
+      python: `def top_k_frequent(nums, k):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public int[] topKFrequent(int[] nums, int k) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "Count the frequency of each element first",
-      "Now you need the top k frequencies — what structure helps?",
-      "A heap or bucket sort works — bucket sort is O(n)",
+      "Before finding the top k, what do you need to know about each number?",
+      "Count how often each number appears using a hashmap. Now you have frequencies — how do you get the top k?",
+      "Sort by frequency and take the top k. Or use a bucket sort where index = frequency for O(n) speed.",
     ],
   },
   {
@@ -78,11 +112,17 @@ const problems = [
     category: "arrays",
     difficulty: "Medium",
     description:
-      "Return an array where each element is the product of all elements except itself. No division allowed.",
+      "Given an integer array nums, return an array where each element is the product of all other elements. You cannot use division.",
+    youtubeId: "bNvIQI2wAjk",
+    starterCode: {
+      javascript: `function productExceptSelf(nums) {\n  // your code here\n}`,
+      python: `def product_except_self(nums):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public int[] productExceptSelf(int[] nums) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "Can you solve it without using division?",
-      "Think about prefix and suffix products separately",
-      "Build left products in one pass, then multiply by right products in another",
+      "You can't use division. Think about what each position's answer actually is.",
+      "The answer at position i = (product of everything to the left) × (product of everything to the right).",
+      "Do two passes: first build left products, then multiply by right products going backwards.",
     ],
   },
   {
@@ -91,11 +131,17 @@ const problems = [
     category: "arrays",
     difficulty: "Medium",
     description:
-      "Find the contiguous subarray with the largest sum (Kadane's Algorithm).",
+      "Given an integer array nums, find the contiguous subarray which has the largest sum and return its sum.",
+    youtubeId: "5WZl3MMT0Eg",
+    starterCode: {
+      javascript: `function maxSubArray(nums) {\n  // your code here\n}`,
+      python: `def max_sub_array(nums):\n    # your code here\n    pass`,
+      java: `class Solution {\n    public int maxSubArray(int[] nums) {\n        // your code here\n    }\n}`,
+    },
     hints: [
-      "Should you include the current element or start a new subarray?",
-      "What happens when your running sum goes negative?",
-      "Track current sum and max sum — reset current to 0 when it goes negative",
+      "At each position, you have a choice: extend the current subarray, or start fresh. Which is better?",
+      "If your running sum goes negative, it's dragging you down — starting fresh from the current element is smarter.",
+      "Track currentSum and maxSum. At each step: currentSum = max(num, currentSum + num). Update maxSum if currentSum is bigger.",
     ],
   },
 ];
