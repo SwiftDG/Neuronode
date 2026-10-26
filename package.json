@@ -1,0 +1,18 @@
+{
+  "name": "neuronode",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Guided coding practice that teaches learners how to reason through unfamiliar problems.",
+  "scripts": {
+    "build": "npm ci --prefix frontend && npm run build --prefix frontend",
+    "check": "npm run lint --prefix frontend && npm run build --prefix frontend",
+    "start": "node backend/main.js"
+  },
+  "engines": { "node": ">=22" },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "serverless-http": "^4.0.0"
+  }
+}
